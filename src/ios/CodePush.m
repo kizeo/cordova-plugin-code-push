@@ -22,7 +22,7 @@ bool pendingInstall = false;
 NSDate* lastResignedDate;
 NSString* const DeploymentKeyPreference = @"codepushdeploymentkey";
 NSString* const PublicKeyPreference = @"codepushpublickey";
-NSString* const IdentifierCodePushPath = @"codepush/deploy/versions";
+NSString* const IdCodePushPath = @"codepush/deploy/versions";
 StatusReport* rollbackStatusReport = nil;
 
 - (void)getBinaryHash:(CDVInvokedUrlCommand *)command {
@@ -418,14 +418,14 @@ StatusReport* rollbackStatusReport = nil;
             // All file URL requests should be handled with the setServerBasePath in case if it is Ionic app.
             if ([CodePush hasIonicWebViewEngine: self.webViewEngine]) {
                 NSString* specifiedServerPath = [CodePush getCurrentServerBasePath];
-                if (![specifiedServerPath containsString:IdentifierCodePushPath] || [url.path containsString:IdentifierCodePushPath]) {
+                if (![specifiedServerPath containsString:IdCodePushPath] || [url.path containsString:IdCodePushPath]) {
                     [CodePush setServerBasePath:url.path webView: self.webViewEngine];
                 }
 
                 return;
             }
 
-            if ([url.absoluteString containsString:IdentifierCodePushPath]) {
+            if ([url.absoluteString containsString:IdCodePushPath]) {
                 // If the app is attempting to load a CodePush update, then we can lock the WebView down to
                 // just the CodePush "versions" directory. This prevents non-CodePush assets from being accessible,
                 // while still allowing us to navigate to a future update, as well as to the binary if a rollback is needed.
