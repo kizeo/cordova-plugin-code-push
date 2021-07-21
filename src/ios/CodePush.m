@@ -412,15 +412,21 @@ StatusReport* rollbackStatusReport = nil;
 #endif
     if([Utilities CDVWebViewEngineAvailable] || !useUiWebView)
     {
+        CPLog(@"use WB WEB VIEW");
         if (url.isFileURL) {
+            CPLog(@"url.isFileURL");
             NSURL *readAccessURL;
 
             // All file URL requests should be handled with the setServerBasePath in case if it is Ionic app.
             if ([CodePush hasIonicWebViewEngine: self.webViewEngine]) {
+                CPLog(@"hasIonicWebViewEngine true");
                 NSString* specifiedServerPath = [CodePush getCurrentServerBasePath];
                 if (![specifiedServerPath containsString:IdCodePushPath] || [url.path containsString:IdCodePushPath]) {
                     [CodePush setServerBasePath:url.path webView: self.webViewEngine];
+                    CPLog(@"setServerBasePath %@", url.path);
                 }
+
+                CPLog(@"hasIonicWebViewEngine return");
 
                 return;
             }
@@ -431,16 +437,19 @@ StatusReport* rollbackStatusReport = nil;
                 // while still allowing us to navigate to a future update, as well as to the binary if a rollback is needed.
                 NSString *libraryPath = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES)[0];
                 readAccessURL = [NSURL fileURLWithPathComponents:@[libraryPath, @"NoCloud", @"codepush", @"deploy", @"versions"]];
+                CPLog(@"lock CodePush Path");
             } else {
                 // In order to allow the WebView to be navigated from the app bundle to another location, we (for some
                 // entirely unknown reason) need to ensure that the "read access URL" is set to the parent of the bundle
                 // as opposed to the www folder, which is what the WKWebViewEngine would attempt to set it to by default.
                 // If we didn't set this, then the attempt to navigate from the bundle to a CodePush update would fail.
                 readAccessURL = [[[NSBundle mainBundle] bundleURL] URLByDeletingLastPathComponent];
+                CPLog(@"set path to Parent Bundle");
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(WKWebView*)self.webViewEngine loadFileURL:url allowingReadAccessToURL:readAccessURL];
+                CPLog(@"load Bundle");
             });
             return;
         }
